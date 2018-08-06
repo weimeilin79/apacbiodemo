@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    name: bionode-crm
+  spec:
+    tags:
+    - from:
+        kind: ImageStreamImage
+        name: bionode-crm@sha256:178c04ddde4423ab265916f20d24e5ecb175689cc7db01da7bd604bc2e6e47ea
+        namespace: fuse
+      name: latest

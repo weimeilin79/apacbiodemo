@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    name: bignode-crm
+  spec:
+    tags:
+    - from:
+        kind: ImageStreamImage
+        name: bignode-crm@sha256:5d0a66f0b98bec51e15126b84bde1d3ced61f681a72299c846ebe76c837eea08
+        namespace: fuse
+      name: latest

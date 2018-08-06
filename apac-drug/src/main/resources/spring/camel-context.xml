@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.mycompany.DrugCache" id="drugCache"/>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <bindy classType="org.mycompany.Drug" id="bindyDataformat" type="Csv"/>
+        </dataFormats>
+        <restConfiguration apiContextPath="api-docs" bindingMode="json"
+            component="undertow" contextPath="/bigPharm/drug"
+            enableCORS="true" port="8080">
+            <apiProperty key="cors" value="true"/>
+            <apiProperty key="api.title" value="Drug Service"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+        </restConfiguration>
+        <rest id="rest-566db8bd-c96b-47e3-8995-567ee07962f3">
+            <get id="get-d5cd49df-a92b-42f6-baf4-ecf46a32a010" uri="/drugid/{drugid}">
+                <description>Get customer info base on ID</description>
+                <param dataType="string" description="Drug ID Number"
+                    name="drugid" required="true" type="path"/>
+                <to uri="direct:rest1"/>
+            </get>
+        </rest>
+        <route id="file1-route">
+            <from id="fileone" uri="file://inputdir?delete=true"/>
+            <split id="_split1">
+                <tokenize token="\n"/>
+                <unmarshal id="_unmarshal1" ref="bindyDataformat"/>
+                <log id="log_1" message="-->${body}"/>
+                <bean id="_bean1" method="put" ref="drugCache"/>
+            </split>
+        </route>
+        <route id="rest1-route">
+            <from id="restone" uri="direct:rest1"/>
+            <log id="log_2" message="-->${headers.drugid}"/>
+            <bean id="_bean2" method="get(${headers.drugid})" ref="drugCache"/>
+            <log id="log_3" message="-->${body}"/>
+        </route>
+    </camelContext>
+</beans>

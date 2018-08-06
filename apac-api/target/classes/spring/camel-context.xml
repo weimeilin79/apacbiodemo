@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <restConfiguration apiContextPath="api-docs" bindingMode="auto"
+            component="undertow" contextPath="/crm"
+            enableCORS="true" port="8080">
+            <apiProperty key="cors" value="true"/>
+            <apiProperty key="api.title" value="All  Services"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+        </restConfiguration>
+        <rest id="rest-566db8bd-c96b-47e3-8995-567ee07962f3">
+            <get id="get-d5cd49df-a92b-42f6-baf4-ecf46a32a010" uri="/drugid/{idno}">
+                <description>All customer by drugid</description>
+                <param dataType="string" description="Drug ID"
+                    name="idno" required="true" type="path"/>
+                <to uri="direct:rest1"/>
+            </get>
+            <get id="get-d5cd49df-a92b-42f6-baf4-ecf46a32a011" uri="/zipcode/{zipcode}">
+                <description>All customer by zipcode </description>
+                <param dataType="string" description="Zip Code"
+                    name="zipcode" required="true" type="path"/>
+                <to uri="direct:rest2"/>
+            </get>
+        </rest>
+        <route id="all-route">
+            <from id="restone" uri="direct:rest1"/>
+            <to id="_to1" uri="amq:queue:drugid"/>
+            <log id="log_1" message="${body}"/>
+        </route>
+        <route id="zipcode-route">
+            <from id="resttwo" uri="direct:rest2"/>
+            <to id="_to2" uri="amq:queue:zipcode"/>
+            <log id="log_2" message="${body}"/>
+        </route>
+        
+    </camelContext>
+</beans>

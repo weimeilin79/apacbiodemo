@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.mycompany.CombindCache" id="combindCache"/>
+    <bean class="org.mycompany.DrugCache" id="drugCache"/>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <bindy classType="org.mycompany.Drug" id="bindyDataformat" type="Csv"/>
+            <json id="json" library="Jackson" unmarshalTypeName="java.util.Map"/>
+        </dataFormats>
+        <restConfiguration apiContextPath="api-docs" bindingMode="json"
+            component="undertow" contextPath="/bigPharm/crm"
+            enableCORS="true" port="8080">
+            <apiProperty key="cors" value="true"/>
+            <apiProperty key="api.title" value="BigPharm Customer Service"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+        </restConfiguration>
+        <rest id="rest-566db8bd-c96b-47e3-8995-567ee07962f3">
+            <get id="get-d5cd49df-a92b-42f6-baf4-ecf46a32a010" uri="/drugid/{idno}">
+                <description>Get customer info base on ID</description>
+                <param dataType="string"
+                    description="Customer ID Number" name="idno"
+                    required="true" type="path"/>
+                <to uri="direct:crm"/>
+            </get>
+            <get id="get-d5cd49df-a92b-42f6-baf4-ecf46a32a011" uri="/zipcode/{zipcode}">
+                <description>Get customer info base on zipcode</description>
+                <param dataType="string" description="Zipcode"
+                    name="zipcode" required="true" type="path"/>
+                <to uri="direct:rest2"/>
+            </get>
+            <get id="get-d5cd49df-a92b-42f6-baf4-ecf46a32a009" uri="/allinfo/{idno}">
+                <description>Get customer info base on ID</description>
+                <param dataType="string"
+                    description="Customer ID Number" name="idno"
+                    required="true" type="path"/>
+                <to uri="direct:rest3"/>
+            </get>
+        </rest>
+        <route id="rest1-route">
+            <from id="restone" uri="direct:crm"/>
+            <to id="_to1" uri="sql:select * from CRM where drugSKUNo = :#idno?dataSource=dataSource"/>
+            <setBody id="_setBody1">
+                <simple>${body[0]}</simple>
+            </setBody>
+            <bean id="_bean3" method="putCRM" ref="combindCache"/>
+        </route>
+        <route id="rest2-route">
+            <from id="resttwo" uri="direct:rest2"/>
+            <to id="_to2" uri="sql:select * from CRM where zipcode = :#zipcode?dataSource=dataSource"/>
+        </route>
+        <route id="rest3-route">
+            <from id="resttwo" uri="direct:rest3"/>
+            <multicast id="_multicast1" stopOnException="true">
+                <to id="_to4" uri="direct:crm"/>
+                <to id="_to5" uri="direct:drug"/>
+                <to id="_to6" uri="direct:pricing"/>
+            </multicast>
+            <bean id="_bean4" method="get" ref="combindCache"/>
+            <log id="log_4" message="-->${body}"/>
+        </route>
+        <route id="file1-route">
+            <from id="fileone" uri="file://inputdir?delete=true"/>
+            <split id="_split1">
+                <tokenize token="\n"/>
+                <unmarshal id="_unmarshal1" ref="bindyDataformat"/>
+                <log id="log_1" message="-->${body}"/>
+                <bean id="_bean1" method="put" ref="drugCache"/>
+            </split>
+        </route>
+        <route id="drug-route">
+            <from id="restone" uri="direct:drug"/>
+            <log id="log_2" message="-->${headers.idno}"/>
+            <bean id="_bean2" method="get(${headers.idno})" ref="drugCache"/>
+            <bean id="_bean5" method="putDrug" ref="combindCache"/>
+        </route>
+        <route id="pricing-route">
+            <from id="restone" uri="direct:pricing"/>
+            <removeHeaders id="_removeHeaders1" pattern="CamelHttp*"/>
+            <to id="_to3" uri="http4://bigpharm-pricing.fuse.svc:8080/bigPharm/pricing/drugid/DR1000?bridgeEndpoint=true"/>
+            <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
+            <log id="log_3" message="-->${body}"/>
+            <unmarshal id="_unmarshal2" ref="json"/>
+            <bean id="_bean6" method="putPricing" ref="combindCache"/>
+        </route>
+    </camelContext>
+</beans>

@@ -1,0 +1,6 @@
+DrugSKUNo,drugClass,drugName,activeIngredient,administrationRoute,alcoholWarning,availableStrength,breastfeedingWarning,dosageForm,doseSchedule,drugUnit,foodWarning,interactingDrug,manufacturer,nonProprietaryName,overdosage,pregnancyWarning
+DR1000,AA,Drua A,abc,admin route,yes,Strengthone,yes,,1d,50,yes,abc,aaa,ssss,50,yes
+DR2000,AA,Drua B,def,admin route,yes,Strengthone,yes,,1d,50,yes,abc,aaa,ssss,50,yes
+DR3000,BB,Drua B,ghi,admin route,yes,Strengthone,yes,,1d,50,yes,abc,aaa,ssss,50,yes
+DR4000,CC,Drua B,ghi,admin route,yes,Strengthone,yes,,1d,50,yes,abc,aaa,ssss,50,yes
+DR5000,DD,Drua B,ghi,admin route,yes,Strengthone,yes,,1d,50,yes,abc,aaa,ssss,50,yes

@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    name: bigpharm-drug
+  spec:
+    tags:
+    - from:
+        kind: ImageStreamImage
+        name: bigpharm-drug@sha256:ee4980dec238545d83dfaf69c9322fb25c7b77ad6af6b69ed91de6d4b9804ad3
+        namespace: fuse
+      name: latest
