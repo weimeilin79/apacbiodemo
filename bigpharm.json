@@ -1,0 +1,95 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "BioPharm Customer Service",
+    "version": "1.0.0"
+  },
+  "host": "bigpharm-crm-fuse.cloudapps.rhdemo.io",
+  "basePath" : "/bigPharm/crm",
+  "schemes" : [ "http" ],
+  "paths": {
+    "/drugid/{idno}": {
+      "get": {
+        "summary": "Get customer info base on ID",
+        "operationId": "rest-566db8bd-c96b-47e3-8995-567ee07962f3",
+        "parameters": [
+          {
+            "name": "idno",
+            "in": "path",
+            "description": "Customer ID Number",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Customer"
+            }
+          }
+        }
+      }
+    },
+    "/zipcode/{zipcode}": {
+      "get": {
+        "summary": "Get customer info base on zipcode",
+        "operationId": "rest-566db8bd-c96b-47e3-8995-567ee07962f3",
+        "parameters": [
+          {
+            "name": "zipcode",
+            "in": "path",
+            "description": "Zipcode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Customer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Customer": {
+      "title": "Root Type for Customer",
+      "description": "The root of the Customer type's schema.",
+      "type": "object",
+      "properties": {
+        "DRUGSKUNO": {
+          "type": "string"
+        },
+        "ORDERID": {
+          "type": "string"
+        },
+        "ID": {
+          "type": "string"
+        },
+        "FIRSTNAME": {
+          "type": "string"
+        },
+        "LASTNAME": {
+          "type": "string"
+        },
+        "PHONE": {
+          "type": "string"
+        },
+        "ZIPCODE": {
+          "type": "string"
+        },
+        "EMAIL": {
+          "type": "string"
+        },
+        "CITY": {
+          "type": "string"
+        },
+        "COUNTRY": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
